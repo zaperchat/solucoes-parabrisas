@@ -1,0 +1,354 @@
+<html lang="pt-br"><head>
+  <meta charset="UTF-8">
+  <title>Pesquisa de Satisfação - HelenaCRM</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+  <style>
+    :root {
+      --helena-green: #00c16a;
+      --helena-dark: #0e1827;
+      --helena-light: #f4f6f8;
+      --helena-gray: #6b7280;
+      --helena-blue: #1a56db;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      font-family: 'Segoe UI', Roboto, sans-serif;
+      background-color: #fff;
+      height: 100%;
+      width: 100%;
+      overflow-x: hidden; /* 🔹 Impede rolagem lateral */
+      color: var(--helena-dark);
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: #fff;
+      padding: 35px 25px;
+      border-radius: 20px;
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08);
+      width: 100%;
+      max-width: 480px; /* 🔹 Ajuste para caber perfeitamente em mobile */
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
+
+    .logo-wrapper {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .logo {
+      max-width: 100px;
+      height: auto;
+    }
+
+    h2 {
+      text-align: center;
+      font-size: clamp(1.3rem, 4vw, 1.8rem);
+      color: var(--helena-dark);
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 16px;
+      font-weight: 600;
+      color: var(--helena-dark);
+      font-size: 0.95rem;
+    }
+
+    select,
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 12px;
+      margin-top: 6px;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 15px;
+      background-color: #f9fafb;
+      transition: border-color 0.2s ease;
+    }
+
+    select:focus,
+    input[type="text"]:focus,
+    textarea:focus {
+      border-color: var(--helena-green);
+      outline: none;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    .nota-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .nota-card {
+      background: #f2f4f6;
+      border-radius: 12px;
+      text-align: center;
+      padding: 14px 0;
+      cursor: pointer;
+      flex: 1 1 calc(20% - 10px);
+      border: 2px solid transparent;
+      transition: all 0.2s ease;
+    }
+
+    .nota-card:hover {
+      border-color: var(--helena-green);
+      background-color: #e8f9f1;
+    }
+
+    .nota-card input {
+      display: none;
+    }
+
+    .nota-card span {
+      display: block;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--helena-dark);
+    }
+
+    .nota-card input:checked + span {
+      color: var(--helena-green);
+      font-weight: 700;
+    }
+
+    button {
+      margin-top: 25px;
+      width: 100%;
+      padding: 14px;
+      background-color: var(--helena-green);
+      color: white;
+      border: none;
+      border-radius: 999px;
+      font-size: clamp(0.9rem, 1vw, 1rem);
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #00a85d;
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .success {
+      text-align: center;
+      color: var(--helena-green);
+      margin-top: 20px;
+      font-weight: 600;
+      display: none;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    input[type="checkbox"] {
+      transform: scale(1.1);
+      margin-right: 6px;
+    }
+
+    form > *:not(:last-child) {
+      margin-bottom: 16px;
+    }
+
+    /* 🔹 Ajustes para telas pequenas */
+    @media (max-width: 480px) {
+      body {
+        padding: 10px;
+      }
+
+      .container {
+        padding: 25px 18px;
+        border-radius: 14px;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+      }
+
+      .nota-card {
+        flex: 1 1 28%; /* 3 por linha */
+        padding: 10px 0;
+      }
+
+      button {
+        padding: 12px;
+      }
+
+      textarea {
+        min-height: 80px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="logo-wrapper">
+      <img src="helenex.jpg" alt="Logo HelenaCRM" class="logo">
+    </div>
+
+    <h2>Pesquisa de Satisfação</h2>
+
+    <form id="csatForm">
+      <input type="hidden" name="sessionId" id="sessionId" value="">
+      <input type="hidden" name="empresa" id="empresa" value="">
+      <input type="hidden" name="telefone" id="telefone" value="">
+      <input type="hidden" name="atendente" id="atendente" value="">
+
+      <label for="solucao">O problema que motivou o contato foi solucionado?</label>
+      <select name="solucao" id="solucao" required="">
+        <option value="">Selecione</option>
+        <option value="Sim">Sim</option>
+        <option value="Não">Não</option>
+      </select>
+
+      <label>Qual é o seu nível de satisfação com o atendimento recebido?</label>
+      <div class="nota-grid">
+        <label class="nota-card"><input type="radio" name="satisfacao" value="1" required=""><span>1</span></label>
+        <label class="nota-card"><input type="radio" name="satisfacao" value="2"><span>2</span></label>
+        <label class="nota-card"><input type="radio" name="satisfacao" value="3"><span>3</span></label>
+        <label class="nota-card"><input type="radio" name="satisfacao" value="4"><span>4</span></label>
+        <label class="nota-card"><input type="radio" name="satisfacao" value="5"><span>5</span></label>
+      </div>
+
+      <div id="followUp" class="hidden">
+        <label>Sentimos muito que sua experiência não tenha sido satisfatória. Podemos entrar em contato para entender melhor?</label>
+        <select id="contatoAutorizado" name="contatoAutorizado">
+          <option value="">Selecione</option>
+          <option value="Sim">Sim</option>
+          <option value="Não">Não</option>
+        </select>
+
+        <div id="contatoInfo" class="hidden">
+          <label for="contatoNome">Com quem podemos entrar em contato?</label>
+          <input type="text" name="contatoNome" id="contatoNome">
+        </div>
+      </div>
+
+      <label for="comentario">Você quer deixar algum comentário, sugestão ou elogio?</label>
+      <textarea name="comentario" id="comentario" rows="4"></textarea>
+
+      <label style="display:block; margin-top:15px;">
+        <input type="checkbox" id="autorizo" name="autorizo" required="" checked="">
+        Autorizo o uso dos meus dados se necessário para contato e melhoria do atendimento.
+      </label>
+
+      <button type="submit" id="submitBtn">Enviar</button>
+      <div class="success" id="successMsg">Obrigado pela sua resposta! ✅</div>
+    </form>
+  </div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const rawSessionId = urlParams.get('sessionId');
+      const fullSessionLink = rawSessionId
+        ? `https://web-staging.helena.run/chat2/sessions/${rawSessionId}`
+        : '';
+
+      document.getElementById('sessionId').value = fullSessionLink;
+      document.getElementById('empresa').value = urlParams.get('empresa') || '';
+      document.getElementById('telefone').value = urlParams.get('telefone') || '';
+      document.getElementById('atendente').value = urlParams.get('atendente') || '';
+
+      const followUp = document.getElementById('followUp');
+      const contatoAutorizado = document.getElementById('contatoAutorizado');
+      const contatoInfo = document.getElementById('contatoInfo');
+      const contatoNomeInput = document.getElementById('contatoNome');
+      const submitButton = document.getElementById('submitBtn');
+
+      const notaRadios = document.querySelectorAll('input[name="satisfacao"]');
+      notaRadios.forEach(radio => {
+        radio.addEventListener('change', () => {
+          const val = parseInt(radio.value);
+          if (val >= 1 && val <= 3) {
+            followUp.classList.remove('hidden');
+          } else {
+            followUp.classList.add('hidden');
+            contatoInfo.classList.add('hidden');
+            contatoAutorizado.value = "";
+            contatoNomeInput.value = "";
+            contatoNomeInput.required = false;
+          }
+        });
+      });
+
+      contatoAutorizado.addEventListener('change', () => {
+        const autorizo = document.getElementById('autorizo').checked;
+        if (contatoAutorizado.value === 'Sim' && autorizo) {
+          contatoInfo.classList.remove('hidden');
+          contatoNomeInput.required = true;
+        } else {
+          contatoInfo.classList.add('hidden');
+          contatoNomeInput.required = false;
+        }
+      });
+
+      document.getElementById('csatForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        submitButton.disabled = true;
+
+        const formData = new FormData(this);
+
+        fetch('https://script.google.com/macros/s/AKfycbzeCYZU7ZDdUMa8kxESZaw09QZ3lpRIi2pejZijR75tp6METqHEGkYmqO5IavjrmAsS/exec', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => {
+          if (response.ok) {
+            document.getElementById('successMsg').style.display = 'block';
+            this.reset();
+            followUp.classList.add('hidden');
+            contatoInfo.classList.add('hidden');
+            contatoNomeInput.required = false;
+          } else {
+            alert('Erro ao enviar. Tente novamente.');
+          }
+          submitButton.disabled = false;
+        })
+        .catch(error => {
+          console.error('Erro:', error);
+          alert('Erro de conexão. Verifique sua internet e tente novamente.');
+          submitButton.disabled = false;
+        });
+      });
+    });
+  </script>
+
+
+</body></html>
